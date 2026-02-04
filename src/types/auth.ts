@@ -9,3 +9,8 @@ export type SigninRequest = {
   username: string; // 이메일 형식
   password: string;
 };
+
+export type SigninResponse = {
+  accessToken: string;
+  refreshToken: string;
+};

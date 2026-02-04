@@ -1,5 +1,9 @@
 import { apiClient } from "./client";
-import type { SigninRequest, SignupRequest } from "../types/auth";
+import type {
+  SigninRequest,
+  SigninResponse,
+  SignupRequest,
+} from "../types/auth";
 
 export async function signup(data: SignupRequest): Promise<void> {
   await apiClient("/auth/signup", {
@@ -8,8 +12,8 @@ export async function signup(data: SignupRequest): Promise<void> {
   });
 }
 
-export async function signin(data: SigninRequest): Promise<void> {
-  await apiClient("/auth/signin", {
+export async function signin(data: SigninRequest): Promise<SigninResponse> {
+  return await apiClient<SigninResponse>("/auth/signin", {
     method: "POST",
     body: JSON.stringify(data),
   });

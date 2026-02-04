@@ -8,6 +8,7 @@ import signinSchema, { SigninFormValues } from "@/src/schema/signinSchema";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signin } from "@/src/api/authApi";
+import { setAuthTokens } from "@/src/api/client";
 
 const SignInForm = () => {
   const router = useRouter();
@@ -26,16 +27,16 @@ const SignInForm = () => {
   });
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log("signin form values:", data);
     setSubmitError(null);
 
     try {
-      await signin({
+      const { accessToken, refreshToken } = await signin({
         username: data.username,
         password: data.password,
       });
-
+      setAuthTokens({ accessToken: accessToken, refreshToken: refreshToken });
       router.push("/");
+      router.refresh();
     } catch (err: unknown) {
       const message =
         err instanceof Error
