@@ -1,0 +1,25 @@
+@use "./variables.scss" as *;
+
+@mixin respond($breakpoint) {
+  @if $breakpoint == sm {
+    @media (max-width: $breakpoint-sm) {
+      @content;
+    }
+  } @else if $breakpoint == md {
+    @media (max-width: $breakpoint-md) {
+      @content;
+    }
+  } @else if $breakpoint == lg {
+    @media (max-width: $breakpoint-lg) {
+      @content;
+    }
+  } @else if $breakpoint == $breakpoint-xl {
+    @media (max-width: xl) {
+      @content;
+    }
+  } @else if $breakpoint == 2xl {
+    @media (max-width: $breakpoint-2xl) {
+      @content;
+    }
+  }
+}
