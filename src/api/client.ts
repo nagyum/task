@@ -1,3 +1,4 @@
+import type { TokenResponse } from "../types/auth";
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://front-mission.bigs.or.kr";
 
@@ -15,11 +16,6 @@ type ApiOptions = RequestInit & {
   accessToken?: string | null;
   auth?: boolean;
   retryOnAuthError?: boolean;
-};
-
-type TokenResponse = {
-  accessToken: string;
-  refreshToken: string;
 };
 
 function isTokenResponse(data: unknown): data is TokenResponse {
@@ -108,7 +104,7 @@ export async function apiClient<T = unknown>(
 
   let res = await doFetch();
   if (
-    res.status === 401 &&
+    (res.status === 401 || res.status === 403) &&
     retryOnAuthError &&
     auth &&
     endpoint !== "/auth/refresh"
@@ -160,7 +156,11 @@ async function tryRefreshTokens(): Promise<boolean> {
     const text = await res.text();
     const data = text ? safeJsonParse(text) : null;
 
-    if (!res.ok) return false;
+    if (!res.ok) {
+      // refreshToken 자체가 만료/무효면 쿠키 정리
+      clearAuthTokens();
+      return false;
+    }
 
     if (isTokenResponse(data)) {
       setAuthTokens({

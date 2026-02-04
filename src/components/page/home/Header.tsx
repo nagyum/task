@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -12,15 +12,25 @@ import style from "./Header.module.scss";
 
 const Header = () => {
   const router = useRouter();
-  const loggedIn = isLoggedIn();
-  const user = getUser();
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [user, setUser] = useState<ReturnType<typeof getUser>>(null);
+
+  useEffect(() => {
+    setMounted(true);
+    setLoggedIn(isLoggedIn());
+    setUser(getUser());
+  }, []);
 
   const handleLogout = () => {
     clearAuthTokens();
     setOpen(false);
+    setLoggedIn(false);
+    setUser(null);
     router.refresh();
   };
+  const showAuth = mounted && loggedIn;
 
   return (
     <header className={style.header}>
@@ -36,7 +46,7 @@ const Header = () => {
         </Link>
 
         <nav className={style.nav} aria-label="메인 메뉴">
-          {!loggedIn ? (
+          {!showAuth ? (
             <Link className={style.navLink} href="/signin">
               로그인
             </Link>
@@ -108,7 +118,7 @@ const Header = () => {
             </div>
 
             <nav className={style.sidebarNav} aria-label="모바일 메뉴 항목">
-              {!loggedIn ? (
+              {!showAuth ? (
                 <Link
                   className={style.sidebarLink}
                   href="/signin"
