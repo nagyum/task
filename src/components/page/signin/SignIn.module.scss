@@ -1,0 +1,80 @@
+@use "../../../styles/mixins.scss" as *;
+
+.form {
+  margin-top: 40px;
+  .flexBox {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .inputDesc {
+    margin-top: 15px;
+    padding: 0 16px;
+    p {
+      font-size: 12px;
+      letter-spacing: 0.01em;
+      color: #737b84;
+      + p {
+        margin-top: calc(6 / 12 * 1em);
+      }
+    }
+
+    @include respond(md) {
+      padding: 0 8px;
+    }
+  }
+}
+
+.all {
+  display: flex;
+  gap: 12px;
+  font-size: 16px;
+  letter-spacing: 0.01em;
+  font-weight: bold;
+  width: 100%;
+  height: 56px;
+  border: 1px solid #dbddde;
+  align-items: center;
+  margin-top: 15px;
+  border-radius: 10px;
+  background: #f9f9fb;
+  padding: 0 16px;
+  box-sizing: border-box;
+
+  @include respond(md) {
+    height: 46px;
+    font-size: 14px;
+  }
+}
+
+.chkBox {
+  margin-top: 21px;
+  padding: 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  @include respond(md) {
+    padding: 0 10px;
+  }
+}
+
+.submit {
+  margin-top: 33px;
+  letter-spacing: 0.01em;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  height: 56px;
+  width: 100%;
+  background: #0963ec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+
+  @include respond(md) {
+    height: 46px;
+    font-size: 14px;
+  }
+}
