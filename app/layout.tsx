@@ -1,18 +1,11 @@
-import { cookies } from "next/headers";
+import Header from "@/src/components/page/home/Header";
 import type { ReactNode } from "react";
-import Header from "./Header";
 
-export default async function RootLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  const cookieStore = await cookies();
-  const loggedIn = cookieStore.has("accessToken");
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko">
       <body>
-        <Header loggedIn={loggedIn} />
+        <Header />
         {children}
       </body>
     </html>
