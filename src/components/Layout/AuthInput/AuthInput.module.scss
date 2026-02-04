@@ -1,0 +1,34 @@
+@use "../../../styles/mixins.scss" as *;
+
+.authInput {
+  width: 100%;
+
+  input {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #dbddde;
+    border-radius: 10px;
+    box-sizing: border-box;
+    padding: 0 calc(16.5 / 16 * 1em);
+    font-size: 16px;
+    display: block;
+    height: 56px;
+  }
+
+  p {
+    color: red;
+    padding: 10px;
+    padding-bottom: 0;
+    font-size: 14px;
+  }
+
+  @include respond(md) {
+    input {
+      font-size: 14px;
+      height: 46px;
+    }
+    p {
+      font-size: 12px;
+    }
+  }
+}
