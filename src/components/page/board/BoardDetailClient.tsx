@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import BoardDetail from "./BoardDetail";
+import BoardDetailSkeleton from "./BoardDetailSkeleton";
 import type { BoardCategoryMap, BoardDetail as BoardDetailType } from "@/src/types/board";
 import { getBoardById, getBoardCategories } from "@/src/api/boardApi";
 import { getStoredAccessToken, refreshAuthTokens } from "@/src/api/client";
@@ -85,12 +86,7 @@ export default function BoardDetailClient({ id }: Props) {
   }, [id, router]);
 
   if (loading) {
-    return (
-      <div className={style.container}>
-        <h1 className={style.title}>게시글</h1>
-        <p>불러오는 중...</p>
-      </div>
-    );
+    return <BoardDetailSkeleton />;
   }
 
   if (!board || !categories) {
