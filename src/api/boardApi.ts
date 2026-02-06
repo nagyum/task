@@ -69,7 +69,7 @@ export const createBoard = async (
   data: BoardRequest,
   image?: File | null,
   accessToken?: string,
-): Promise<BoardDetail> => {
+): Promise<void> => {
   const formData = new FormData();
 
   const requestBlob = new Blob([JSON.stringify(data)], {
@@ -94,7 +94,8 @@ export const createBoard = async (
     throw new Error(text || `Request failed (${res.status})`);
   }
 
-  return res.json();
+  if (res.status === 204) return;
+  await res.json();
 };
 
 /**
@@ -105,7 +106,7 @@ export const updateBoard = async (
   data: BoardRequest,
   image?: File | null,
   accessToken?: string,
-): Promise<BoardDetail> => {
+): Promise<void> => {
   const formData = new FormData();
 
   const requestBlob = new Blob([JSON.stringify(data)], {
@@ -130,7 +131,8 @@ export const updateBoard = async (
     throw new Error(text || `Request failed (${res.status})`);
   }
 
-  return res.json();
+  if (res.status === 204) return;
+  await res.json();
 };
 
 /**
