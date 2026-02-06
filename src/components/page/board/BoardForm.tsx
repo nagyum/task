@@ -163,36 +163,6 @@ export default function BoardForm(props: Props) {
           />
         </div>
 
-        {/* <div className={style.field}>
-          <label className={style.label}>이미지 (선택)</label>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className={style.fileInput}
-          />
-          {imagePreview && (
-            <div className={style.imagePreview}>
-              <Image
-                src={imagePreview}
-                alt="미리보기"
-                width={300}
-                height={200}
-                className={style.previewImage}
-                unoptimized
-              />
-              <button
-                type="button"
-                onClick={handleImageRemove}
-                className={style.removeImage}
-              >
-                이미지 삭제
-              </button>
-            </div>
-          )}
-        </div> */}
-
         <div className={style.actions}>
           <button
             type="button"
