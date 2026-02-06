@@ -2,6 +2,10 @@
 
 게시글 CRUD 및 회원 인증 기능을 제공하는 웹 애플리케이션입니다.
 
+## 배포 주소
+
+https://task-henna-delta.vercel.app/
+
 ## 실행 환경
 
 - Node.js 18.18 이상
