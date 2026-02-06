@@ -1,0 +1,142 @@
+@use "../../../styles/mixins.scss" as *;
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+
+  @include respond(md) {
+    padding: 20px 16px;
+  }
+}
+
+.header {
+  margin-bottom: 32px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 24px;
+}
+
+.category {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #f3f4f6;
+  color: #4b5563;
+  font-size: 14px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 12px;
+  line-height: 1.4;
+
+  @include respond(md) {
+    font-size: 22px;
+  }
+}
+
+.date {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.imageWrapper {
+  margin: 0 0 32px;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.content {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #374151;
+  min-height: 200px;
+
+  p {
+    margin: 0 0 8px;
+  }
+
+  @include respond(md) {
+    font-size: 15px;
+  }
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+
+  @include respond(md) {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+.backButton {
+  padding: 12px 24px;
+  background: #f3f4f6;
+  color: #374151;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #e5e7eb;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.editButton {
+  padding: 12px 24px;
+  background: #0963ec;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #0751c7;
+  }
+}
+
+.deleteButton {
+  padding: 12px 24px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #dc2626;
+  }
+
+  &:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+  }
+}

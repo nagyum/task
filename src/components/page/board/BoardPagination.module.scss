@@ -1,0 +1,55 @@
+@use "../../../styles/mixins.scss" as *;
+
+.nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 16px;
+  gap: 16px;
+  width: 100%;
+
+  @include respond(md) {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.link {
+  padding: 8px 16px;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #e5e7eb;
+  }
+}
+
+.disabled {
+  padding: 8px 16px;
+  background: #f3f4f6;
+  color: #9ca3af;
+  font-size: 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.pageInfo {
+  font-size: 14px;
+  color: #6b7280;
+  min-width: 60px;
+  text-align: center;
+}

@@ -10,7 +10,11 @@ export type SigninRequest = {
   password: string;
 };
 
-export type SigninResponse = {
+export type TokenResponse = {
   accessToken: string;
+  refreshToken: string;
+};
+
+export type RefreshTokenRequest = {
   refreshToken: string;
 };

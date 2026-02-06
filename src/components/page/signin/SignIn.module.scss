@@ -72,6 +72,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 10px;
+  cursor: pointer;
+  border: #0963ec;
 
   @include respond(md) {
     height: 46px;

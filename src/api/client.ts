@@ -1,3 +1,4 @@
+import type { TokenResponse } from "../types/auth";
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://front-mission.bigs.or.kr";
 
@@ -13,13 +14,9 @@ export class ApiError extends Error {
 
 type ApiOptions = RequestInit & {
   accessToken?: string | null;
+  refreshToken?: string | null;
   auth?: boolean;
   retryOnAuthError?: boolean;
-};
-
-type TokenResponse = {
-  accessToken: string;
-  refreshToken: string;
 };
 
 function isTokenResponse(data: unknown): data is TokenResponse {
@@ -86,6 +83,7 @@ export async function apiClient<T = unknown>(
 ): Promise<T> {
   const {
     accessToken: overrideAccessToken,
+    refreshToken: overrideRefreshToken,
     auth,
     retryOnAuthError = true,
     headers,
@@ -94,39 +92,32 @@ export async function apiClient<T = unknown>(
 
   const accessToken =
     overrideAccessToken ?? (auth ? getStoredAccessToken() : null);
+  const refreshToken =
+    overrideRefreshToken ?? (auth ? getStoredRefreshToken() : null);
 
-  const doFetch = async (): Promise<Response> => {
+  const doFetch = async (token: string | null): Promise<Response> => {
     return fetch(`${BASE_URL}${endpoint}`, {
       ...rest,
       headers: {
         "Content-Type": "application/json",
-        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(headers ?? {}),
       },
     });
   };
 
-  let res = await doFetch();
+  let res = await doFetch(accessToken);
+
   if (
-    res.status === 401 &&
+    (res.status === 401 || res.status === 403) &&
     retryOnAuthError &&
     auth &&
     endpoint !== "/auth/refresh"
   ) {
-    const refreshed = await tryRefreshTokens();
-    if (refreshed) {
+    const refreshResult = await tryRefreshTokens(refreshToken);
+    if (refreshResult) {
       // retry with new access token
-      const newAccessToken = getStoredAccessToken();
-      res = await fetch(`${BASE_URL}${endpoint}`, {
-        ...rest,
-        headers: {
-          "Content-Type": "application/json",
-          ...(newAccessToken
-            ? { Authorization: `Bearer ${newAccessToken}` }
-            : {}),
-          ...(headers ?? {}),
-        },
-      });
+      res = await doFetch(refreshResult.accessToken);
     }
   }
 
@@ -144,9 +135,13 @@ export async function apiClient<T = unknown>(
   return data as T;
 }
 
-async function tryRefreshTokens(): Promise<boolean> {
-  const refreshToken = getStoredRefreshToken();
-  if (!refreshToken) return false;
+async function tryRefreshTokens(
+  tokenFromParam?: string | null,
+): Promise<TokenResponse | null> {
+  const refreshToken = tokenFromParam ?? getStoredRefreshToken();
+  if (!refreshToken) return null;
+
+  const isServer = typeof document === "undefined";
 
   try {
     const res = await fetch(`${BASE_URL}/auth/refresh`, {
@@ -154,25 +149,34 @@ async function tryRefreshTokens(): Promise<boolean> {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ refreshToken: refreshToken }),
+      body: JSON.stringify({ refreshToken }),
     });
 
     const text = await res.text();
     const data = text ? safeJsonParse(text) : null;
 
-    if (!res.ok) return false;
-
-    if (isTokenResponse(data)) {
-      setAuthTokens({
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
-      });
-      return true;
+    if (!res.ok) {
+      // refreshToken 자체가 만료/무효면 쿠키 정리 (클라이언트에서만)
+      if (!isServer) {
+        clearAuthTokens();
+      }
+      return null;
     }
 
-    return false;
+    if (isTokenResponse(data)) {
+      // 클라이언트 환경에서만 쿠키에 저장
+      if (!isServer) {
+        setAuthTokens({
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+        });
+      }
+      return data;
+    }
+
+    return null;
   } catch {
-    return false;
+    return null;
   }
 }
 
