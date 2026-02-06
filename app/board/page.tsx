@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 
 import BoardList from "@/src/components/page/board/BoardList";
 import { getBoardCategories, getBoards } from "@/src/api/boardApi";
+import { ApiError } from "@/src/api/client";
 
 type Props = {
   searchParams?: Promise<{
@@ -97,6 +98,7 @@ export default async function BoardPage({ searchParams }: Props) {
     | {
         status: number | null;
         message: string;
+        data?: unknown;
       }
     | null = null;
 
@@ -121,6 +123,7 @@ export default async function BoardPage({ searchParams }: Props) {
           err instanceof Error
             ? err.message
             : "요청 실패 (오류 메시지 없음)",
+        data: err instanceof ApiError ? err.data : undefined,
       };
     } else {
       throw err;
@@ -168,6 +171,14 @@ export default async function BoardPage({ searchParams }: Props) {
             <>
               <div>errorStatus: {String(debugError.status)}</div>
               <div>errorMessage: {debugError.message}</div>
+              <div>
+                errorData:{" "}
+                {typeof debugError.data === "string"
+                  ? debugError.data
+                  : debugError.data
+                    ? JSON.stringify(debugError.data)
+                    : "null"}
+              </div>
             </>
           )}
           {!accessToken && (
