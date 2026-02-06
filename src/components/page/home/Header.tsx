@@ -24,13 +24,13 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    setMounted(true);
+    setMounted(true); // eslint-disable-line
     checkAuth();
   }, [checkAuth]);
 
   // 페이지 이동 시 로그인 상태 다시 체크
   useEffect(() => {
-    checkAuth();
+    checkAuth(); // eslint-disable-line
   }, [pathname, checkAuth]);
 
   const handleLogout = () => {

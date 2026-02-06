@@ -24,6 +24,13 @@ export default function BoardDetail({ board, categories }: Props) {
 
   const categoryLabel = categories[board.boardCategory] ?? board.boardCategory;
   const imageUrl = board.imageUrl ? `${BASE_URL}${board.imageUrl}` : null;
+  const createdAt = new Date(board.createdAt).toLocaleString("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   const handleDelete = async () => {
     if (!confirm("정말 삭제하시겠습니까?")) return;
@@ -48,7 +55,7 @@ export default function BoardDetail({ board, categories }: Props) {
         <span className={style.category}>{categoryLabel}</span>
         <h1 className={style.title}>{board.title}</h1>
         <time className={style.date}>
-          {new Date(board.createdAt).toLocaleString()}
+          {createdAt}
         </time>
       </header>
 

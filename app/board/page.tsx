@@ -5,10 +5,10 @@ import BoardList from "@/src/components/page/board/BoardList";
 import { getBoardCategories, getBoards } from "@/src/api/boardApi";
 
 type Props = {
-  searchParams?: {
+  searchParams?: Promise<{
     page?: string | string[];
     size?: string | string[];
-  };
+  }>;
 };
 
 function toNumber(value: string | string[] | undefined, fallback: number) {
@@ -26,8 +26,10 @@ function getErrorStatus(err: unknown): number | null {
 }
 
 export default async function BoardPage({ searchParams }: Props) {
-  const page = toNumber(searchParams?.page, 0);
-  const size = toNumber(searchParams?.size, 10);
+  const resolvedSearchParams = await searchParams;
+  const pageParam = toNumber(resolvedSearchParams?.page, 1);
+  const size = toNumber(resolvedSearchParams?.size, 10);
+  const page = Math.max(pageParam - 1, 0);
 
   const accessToken = (await cookies()).get("accessToken")?.value;
   if (!accessToken) redirect("/signin");

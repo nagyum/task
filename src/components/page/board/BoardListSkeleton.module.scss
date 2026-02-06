@@ -1,0 +1,132 @@
+@use "../../../styles/mixins.scss" as *;
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+
+  @include respond(md) {
+    padding: 20px 16px;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  @include respond(md) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+.title {
+  width: 140px;
+  height: 28px;
+  border-radius: 6px;
+}
+
+.button {
+  width: 120px;
+  height: 40px;
+  border-radius: 8px;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 12px;
+  border-bottom: 1px solid #e5e7eb;
+
+  @include respond(md) {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 8px;
+  }
+}
+
+.category {
+  width: 52px;
+  height: 20px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.titleLine {
+  flex: 1;
+  height: 18px;
+  border-radius: 4px;
+
+  @include respond(md) {
+    flex-basis: 100%;
+    order: -1;
+  }
+}
+
+.date {
+  width: 120px;
+  height: 16px;
+  border-radius: 4px;
+  flex-shrink: 0;
+
+  @include respond(md) {
+    width: 100px;
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+}
+
+.pageButton {
+  width: 64px;
+  height: 32px;
+  border-radius: 6px;
+}
+
+.pageInfo {
+  width: 70px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.container
+  :is(
+    .title,
+    .button,
+    .tab,
+    .category,
+    .titleLine,
+    .date,
+    .pageButton,
+    .pageInfo
+  ) {
+  background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: -200% 0%;
+  }
+}

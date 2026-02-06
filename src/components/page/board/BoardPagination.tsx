@@ -10,8 +10,6 @@ type Props = {
   isLast: boolean;
 };
 
-const SIZE_OPTIONS = [5, 10, 30, 100];
-
 export default function BoardPagination({
   page,
   size,
@@ -45,19 +43,6 @@ export default function BoardPagination({
         >
           다음
         </Link>
-      </div>
-
-      <div className={style.sizeSelector}>
-        <span className={style.sizeLabel}>페이지당</span>
-        {SIZE_OPTIONS.map((option) => (
-          <Link
-            key={option}
-            href={`/board?page=0&size=${option}`}
-            className={size === option ? style.sizeActive : style.sizeOption}
-          >
-            {option}
-          </Link>
-        ))}
       </div>
     </nav>
   );
