@@ -94,8 +94,13 @@ export const createBoard = async (
     throw new Error(text || `Request failed (${res.status})`);
   }
 
-  if (res.status === 204) return;
-  await res.json();
+  const text = await res.text();
+  if (!text) return;
+  try {
+    JSON.parse(text);
+  } catch {
+    return;
+  }
 };
 
 /**
@@ -131,8 +136,13 @@ export const updateBoard = async (
     throw new Error(text || `Request failed (${res.status})`);
   }
 
-  if (res.status === 204) return;
-  await res.json();
+  const text = await res.text();
+  if (!text) return;
+  try {
+    JSON.parse(text);
+  } catch {
+    return;
+  }
 };
 
 /**
