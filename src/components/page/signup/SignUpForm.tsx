@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { signup } from "@/src/api/authApi";
+import { ApiError } from "@/src/api/client";
 import signupSchema, { SignupFormValues } from "@/src/schema/signupSchema";
 
 import style from "./SignUp.module.scss";
@@ -18,6 +19,7 @@ const SignUpForm = () => {
   const {
     handleSubmit,
     register,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -43,11 +45,26 @@ const SignUpForm = () => {
 
       router.push("/signin");
     } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.";
-      setSubmitError(message);
+      const defaultMessage =
+        "회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.";
+
+      let handled = false;
+
+      if (err instanceof ApiError && err.data && typeof err.data === "object") {
+        const data = err.data as Record<string, unknown>;
+        const usernameErrors = data.username;
+        if (Array.isArray(usernameErrors) && usernameErrors[0]) {
+          setError("username", {
+            type: "server",
+            message: String(usernameErrors[0]),
+          });
+          handled = true;
+        }
+      }
+
+      if (!handled) {
+        setSubmitError(defaultMessage);
+      }
     }
   });
 

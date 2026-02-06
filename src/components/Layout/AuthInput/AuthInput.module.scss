@@ -2,6 +2,7 @@
 
 .authInput {
   width: 100%;
+  position: relative;
 
   input {
     width: 100%;
@@ -15,6 +16,30 @@
     height: 56px;
   }
 
+  .withToggle {
+    padding-right: 64px;
+  }
+
+  .toggleButton {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    height: 32px;
+    min-width: 48px;
+    border: 0;
+    background: #eef1f4;
+    border-radius: 16px;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1f2933;
+    cursor: pointer;
+  }
+
+  .toggleButton:hover {
+    background: #e3e7ec;
+  }
+
   p {
     color: red;
     padding: 10px;
@@ -26,6 +51,11 @@
     input {
       font-size: 14px;
       height: 46px;
+    }
+    .toggleButton {
+      top: 7px;
+      height: 30px;
+      min-width: 44px;
     }
     p {
       font-size: 12px;
