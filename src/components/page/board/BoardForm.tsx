@@ -10,7 +10,7 @@ import type {
   BoardDetail,
 } from "@/src/types/board";
 import { createBoard, updateBoard } from "@/src/api/boardApi";
-import { getStoredAccessToken } from "@/src/api/client";
+import { getApiBaseUrl, getStoredAccessToken } from "@/src/api/client";
 import style from "./BoardForm.module.scss";
 
 type Props =
@@ -24,8 +24,7 @@ type Props =
       board: BoardDetail;
     };
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://front-mission.bigs.or.kr";
+const BASE_URL = getApiBaseUrl();
 
 export default function BoardForm(props: Props) {
   const { mode, categories } = props;

@@ -1,6 +1,26 @@
 import type { TokenResponse } from "../types/auth";
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://front-mission.bigs.or.kr";
+
+const DEFAULT_BASE_URL = "/api/proxy";
+const PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? DEFAULT_BASE_URL;
+
+export function getApiBaseUrl() {
+  if (PUBLIC_BASE_URL.startsWith("http")) return PUBLIC_BASE_URL;
+  if (typeof window !== "undefined") return PUBLIC_BASE_URL;
+
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL ??
+    process.env.APP_URL ??
+    process.env.VERCEL_URL;
+
+  if (appUrl) {
+    const normalized = appUrl.startsWith("http")
+      ? appUrl
+      : `https://${appUrl}`;
+    return `${normalized}${PUBLIC_BASE_URL}`;
+  }
+
+  return `http://localhost:3000${PUBLIC_BASE_URL}`;
+}
 
 export class ApiError extends Error {
   status: number;
@@ -96,7 +116,8 @@ export async function apiClient<T = unknown>(
     overrideRefreshToken ?? (auth ? getStoredRefreshToken() : null);
 
   const doFetch = async (token: string | null): Promise<Response> => {
-    return fetch(`${BASE_URL}${endpoint}`, {
+    const baseUrl = getApiBaseUrl();
+    return fetch(`${baseUrl}${endpoint}`, {
       ...rest,
       headers: {
         "Content-Type": "application/json",
@@ -144,7 +165,8 @@ async function tryRefreshTokens(
   const isServer = typeof document === "undefined";
 
   try {
-    const res = await fetch(`${BASE_URL}/auth/refresh`, {
+    const baseUrl = getApiBaseUrl();
+    const res = await fetch(`${baseUrl}/auth/refresh`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

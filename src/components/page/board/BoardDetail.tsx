@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 import type { BoardCategoryMap, BoardDetail as BoardDetailType } from "@/src/types/board";
 import { deleteBoard } from "@/src/api/boardApi";
-import { getStoredAccessToken } from "@/src/api/client";
+import { getApiBaseUrl, getStoredAccessToken } from "@/src/api/client";
 import style from "./BoardDetail.module.scss";
 
 type Props = {
@@ -15,8 +15,7 @@ type Props = {
   categories: BoardCategoryMap;
 };
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://front-mission.bigs.or.kr";
+const BASE_URL = getApiBaseUrl();
 
 export default function BoardDetail({ board, categories }: Props) {
   const router = useRouter();

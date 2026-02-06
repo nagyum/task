@@ -1,4 +1,4 @@
-import { apiClient } from "./client";
+import { apiClient, getApiBaseUrl } from "./client";
 import type {
   BoardCategoryMap,
   BoardDetail,
@@ -60,8 +60,7 @@ export const getBoardCategories = async (tokens?: TokenParams | string) => {
   });
 };
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://front-mission.bigs.or.kr";
+const BASE_URL = getApiBaseUrl();
 
 /**
  * 글 등록 (multipart/form-data)
