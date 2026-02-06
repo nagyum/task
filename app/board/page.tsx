@@ -26,6 +26,25 @@ function getErrorStatus(err: unknown): number | null {
   return typeof status === "number" ? status : null;
 }
 
+function decodeJwtPayload(token: string | null | undefined) {
+  if (!token) return null;
+  const parts = token.split(".");
+  if (parts.length < 2) return null;
+  const payload = parts[1];
+  const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized.padEnd(
+    normalized.length + ((4 - (normalized.length % 4)) % 4),
+    "=",
+  );
+
+  try {
+    const json = Buffer.from(padded, "base64").toString("utf8");
+    return JSON.parse(json) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
 export default async function BoardPage({ searchParams }: Props) {
   const resolvedSearchParams = await searchParams;
   const pageParam = toNumber(resolvedSearchParams?.page, 1);
@@ -48,12 +67,27 @@ export default async function BoardPage({ searchParams }: Props) {
     return `${token.slice(0, 6)}…${token.slice(-4)}`;
   };
 
+  const jwtPayload = decodeJwtPayload(accessToken);
+  const expSeconds =
+    typeof jwtPayload?.exp === "number" ? jwtPayload.exp : null;
+  const expDate =
+    expSeconds !== null ? new Date(expSeconds * 1000) : null;
+  const now = new Date();
+  const secondsUntilExp =
+    expSeconds !== null ? Math.floor(expSeconds - now.getTime() / 1000) : null;
+  const apiBaseUrl =
+    process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://front-mission.bigs.or.kr";
+
   const debugInfo = debugEnabled
     ? {
         hasAccessToken: Boolean(accessToken),
         tokenPreview: maskToken(accessToken),
         tokenLength: accessToken?.length ?? 0,
         cookieNames,
+        apiBaseUrl,
+        jwtPayload,
+        expDate,
+        secondsUntilExp,
       }
     : null;
 
@@ -113,6 +147,23 @@ export default async function BoardPage({ searchParams }: Props) {
           <div>tokenPreview: {debugInfo?.tokenPreview}</div>
           <div>tokenLength: {debugInfo?.tokenLength}</div>
           <div>cookieNames: {debugInfo?.cookieNames.join(", ") || "(none)"}</div>
+          <div>apiBaseUrl: {debugInfo?.apiBaseUrl}</div>
+          <div>
+            jwtPayload:{" "}
+            {debugInfo?.jwtPayload
+              ? JSON.stringify(debugInfo.jwtPayload)
+              : "null"}
+          </div>
+          <div>
+            expDate:{" "}
+            {debugInfo?.expDate ? debugInfo.expDate.toISOString() : "null"}
+          </div>
+          <div>
+            secondsUntilExp:{" "}
+            {debugInfo?.secondsUntilExp !== null
+              ? String(debugInfo?.secondsUntilExp)
+              : "null"}
+          </div>
           {debugError && (
             <>
               <div>errorStatus: {String(debugError.status)}</div>
