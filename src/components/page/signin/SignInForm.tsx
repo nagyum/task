@@ -39,7 +39,7 @@ const SignInForm = () => {
       router.refresh();
     } catch (err: unknown) {
       const defaultMessage =
-        "로그인에 실패했습니다. 잠시 후 다시 시도해주세요.";
+        "사용자를 찾을 수 없거나, 비밀번호가 일치하지 않습니다";
 
       if (err instanceof ApiError) {
         const data =
