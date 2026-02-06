@@ -41,9 +41,14 @@ const SignInForm = () => {
       const defaultMessage =
         "로그인에 실패했습니다. 잠시 후 다시 시도해주세요.";
 
-      if (err instanceof ApiError && err.data && typeof err.data === "object") {
-        const data = err.data as Record<string, unknown>;
-        const message = typeof data.message === "string" ? data.message : "";
+      if (err instanceof ApiError) {
+        const data =
+          err.data && typeof err.data === "object"
+            ? (err.data as Record<string, unknown>)
+            : null;
+        const messageFromData =
+          data && typeof data.message === "string" ? data.message : "";
+        const message = messageFromData || err.message;
         if (message) {
           setSubmitError(message);
           return;

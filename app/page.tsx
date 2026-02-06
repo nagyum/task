@@ -14,9 +14,6 @@ export default function Page() {
           <Link className={style.primaryCta} href="/board">
             커뮤니티로 이동
           </Link>
-          <Link className={style.secondaryCta} href="/signin">
-            로그인
-          </Link>
         </div>
       </section>
     </main>
