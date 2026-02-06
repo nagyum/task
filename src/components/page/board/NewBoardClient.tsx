@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import BoardForm from "./BoardForm";
 import type { BoardCategoryMap } from "@/src/types/board";
 import { getBoardCategories } from "@/src/api/boardApi";
-import { getStoredAccessToken } from "@/src/api/client";
+import { getStoredAccessToken, refreshAuthTokens } from "@/src/api/client";
 import style from "./BoardForm.module.scss";
 
 function getErrorStatus(err: unknown): number | null {
@@ -25,12 +25,6 @@ export default function NewBoardClient() {
 
   useEffect(() => {
     let cancelled = false;
-    const accessToken = getStoredAccessToken();
-
-    if (!accessToken) {
-      router.push("/signin");
-      return;
-    }
 
     (async () => {
       await Promise.resolve();
@@ -38,6 +32,22 @@ export default function NewBoardClient() {
 
       setLoading(true);
       setErrorMessage(null);
+
+      let accessToken = getStoredAccessToken();
+      if (!accessToken) {
+        const refreshed = await refreshAuthTokens();
+        if (!cancelled && refreshed) {
+          accessToken = getStoredAccessToken();
+        }
+      }
+
+      if (!accessToken) {
+        router.push("/signin");
+        if (!cancelled) {
+          setLoading(false);
+        }
+        return;
+      }
 
       getBoardCategories(accessToken)
         .then((categoryResult) => {

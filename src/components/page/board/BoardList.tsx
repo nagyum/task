@@ -10,7 +10,7 @@ import BoardPagination from "./BoardPagination";
 import BoardListSkeleton from "./BoardListSkeleton";
 import style from "./BoardList.module.scss";
 import { getBoardCategories, getBoards } from "@/src/api/boardApi";
-import { getStoredAccessToken } from "@/src/api/client";
+import { getStoredAccessToken, refreshAuthTokens } from "@/src/api/client";
 
 type Props = {
   page: number;
@@ -34,12 +34,6 @@ export default function BoardList({ page, size }: Props) {
 
   useEffect(() => {
     let cancelled = false;
-    const accessToken = getStoredAccessToken();
-
-    if (!accessToken) {
-      router.push("/signin");
-      return;
-    }
 
     (async () => {
       await Promise.resolve();
@@ -47,6 +41,22 @@ export default function BoardList({ page, size }: Props) {
 
       setLoading(true);
       setErrorMessage(null);
+
+      let accessToken = getStoredAccessToken();
+      if (!accessToken) {
+        const refreshed = await refreshAuthTokens();
+        if (!cancelled && refreshed) {
+          accessToken = getStoredAccessToken();
+        }
+      }
+
+      if (!accessToken) {
+        router.push("/signin");
+        if (!cancelled) {
+          setLoading(false);
+        }
+        return;
+      }
 
       Promise.all([
         getBoards({ page, size }, accessToken),

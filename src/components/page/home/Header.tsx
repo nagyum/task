@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 
-import { clearAuthTokens } from "@/src/api/client";
+import { clearAuthTokens, refreshAuthTokens } from "@/src/api/client";
 import { isLoggedIn } from "@/src/utils/auth";
 import { getUser } from "@/src/utils/users";
 import style from "./Header.module.scss";
@@ -23,15 +23,31 @@ const Header = () => {
     setUser(getUser());
   }, []);
 
+  const refreshIfNeeded = useCallback(async () => {
+    if (isLoggedIn()) {
+      checkAuth();
+      return;
+    }
+
+    const refreshed = await refreshAuthTokens();
+    if (refreshed) {
+      checkAuth();
+      return;
+    }
+
+    setLoggedIn(false);
+    setUser(null);
+  }, [checkAuth]);
+
   useEffect(() => {
     setMounted(true); // eslint-disable-line
-    checkAuth();
-  }, [checkAuth]);
+    refreshIfNeeded();
+  }, [refreshIfNeeded]);
 
   // 페이지 이동 시 로그인 상태 다시 체크
   useEffect(() => {
-    checkAuth(); // eslint-disable-line
-  }, [pathname, checkAuth]);
+    refreshIfNeeded(); // eslint-disable-line
+  }, [pathname, refreshIfNeeded]);
 
   const handleLogout = () => {
     clearAuthTokens();
@@ -128,13 +144,6 @@ const Header = () => {
             </div>
 
             <nav className={style.sidebarNav} aria-label="모바일 메뉴 항목">
-              <Link
-                className={style.sidebarLink}
-                href="/board"
-                onClick={() => setOpen(false)}
-              >
-                커뮤니티
-              </Link>
               {!showAuth ? (
                 <Link
                   className={style.sidebarLink}
@@ -148,6 +157,13 @@ const Header = () => {
                   <div className={style.sidebarUser}>
                     {user?.name} ({user?.username})
                   </div>
+                  <Link
+                    className={style.sidebarLink}
+                    href="/board"
+                    onClick={() => setOpen(false)}
+                  >
+                    커뮤니티
+                  </Link>
                   <button
                     type="button"
                     className={style.sidebarButton}

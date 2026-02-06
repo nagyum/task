@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import BoardForm from "./BoardForm";
 import type { BoardCategoryMap, BoardDetail } from "@/src/types/board";
 import { getBoardById, getBoardCategories } from "@/src/api/boardApi";
-import { getStoredAccessToken } from "@/src/api/client";
+import { getStoredAccessToken, refreshAuthTokens } from "@/src/api/client";
 import style from "./BoardForm.module.scss";
 
 type Props = {
@@ -30,12 +30,6 @@ export default function EditBoardClient({ id }: Props) {
 
   useEffect(() => {
     let cancelled = false;
-    const accessToken = getStoredAccessToken();
-
-    if (!accessToken) {
-      router.push("/signin");
-      return;
-    }
 
     (async () => {
       await Promise.resolve();
@@ -43,6 +37,22 @@ export default function EditBoardClient({ id }: Props) {
 
       setLoading(true);
       setErrorMessage(null);
+
+      let accessToken = getStoredAccessToken();
+      if (!accessToken) {
+        const refreshed = await refreshAuthTokens();
+        if (!cancelled && refreshed) {
+          accessToken = getStoredAccessToken();
+        }
+      }
+
+      if (!accessToken) {
+        router.push("/signin");
+        if (!cancelled) {
+          setLoading(false);
+        }
+        return;
+      }
 
       Promise.all([getBoardById(id, { accessToken }), getBoardCategories(accessToken)])
         .then(([boardResult, categoryResult]) => {

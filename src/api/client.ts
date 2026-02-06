@@ -202,6 +202,11 @@ async function tryRefreshTokens(
   }
 }
 
+export async function refreshAuthTokens(): Promise<boolean> {
+  const result = await tryRefreshTokens();
+  return Boolean(result);
+}
+
 function safeJsonParse(text: string) {
   try {
     return JSON.parse(text);
