@@ -1,0 +1,21 @@
+.content {
+  max-width: 500px;
+  margin: 100px auto;
+  padding: 400px 200px;
+  text-align: center;
+  .title {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+  .text {
+    color: #6b7280;
+    margin-bottom: 24px;
+  }
+  .link {
+    padding: 12px 24px;
+    background-color: #0963ec;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+}
