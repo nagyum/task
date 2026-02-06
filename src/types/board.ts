@@ -6,11 +6,29 @@ export type BoardCategory = "NOTICE" | "FREE" | "QNA" | "ETC";
  */
 export type BoardCategoryMap = Record<BoardCategory, string>;
 
+/** 목록 조회용 */
 export type Board = {
   id: number;
   title: string;
   category: BoardCategory;
   createdAt: string;
+};
+
+/** 상세 조회용 (GET /boards/{id}) */
+export type BoardDetail = {
+  id: number;
+  title: string;
+  content: string;
+  boardCategory: BoardCategory;
+  imageUrl?: string | null;
+  createdAt: string;
+};
+
+/** 글 등록/수정 요청 */
+export type BoardRequest = {
+  title: string;
+  content: string;
+  category: BoardCategory;
 };
 
 export type Sort = {
@@ -45,4 +63,14 @@ export type BoardListResponse = {
   sort: Sort;
   first: boolean;
   empty: boolean;
+};
+
+export type GetBoardsParams = {
+  page?: number;
+  size?: number;
+};
+
+export type TokenParams = {
+  accessToken?: string;
+  refreshToken?: string;
 };

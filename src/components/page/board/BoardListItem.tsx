@@ -1,6 +1,7 @@
 // src/components/board/BoardListItem.tsx
 import type { Board } from "@/src/types/board";
 import Link from "next/link";
+import style from "./BoardListItem.module.scss";
 
 type Props = {
   board: Board;
@@ -9,13 +10,14 @@ type Props = {
 
 export default function BoardListItem({ board, label }: Props) {
   return (
-    <li>
-      <Link href={`/board/${board.id}`}>
-        <strong>[{label}]</strong> {board.title}
+    <li className={style.item}>
+      <Link href={`/board/${board.id}`} className={style.link}>
+        <span className={style.category}>{label}</span>
+        <span className={style.title}>{board.title}</span>
+        <time className={style.date}>
+          {new Date(board.createdAt).toLocaleDateString()}
+        </time>
       </Link>
-      <span style={{ marginLeft: 8, opacity: 0.7 }}>
-        {new Date(board.createdAt).toLocaleString()}
-      </span>
     </li>
   );
 }

@@ -1,13 +1,8 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
 
-import BoardDetail from "@/src/components/page/board/BoardDetail";
-import { getBoardById, getBoardCategories } from "@/src/api/boardApi";
-
-type Props = {
-  params: Promise<{ id: string }>;
-};
+import BoardForm from "@/src/components/page/board/BoardForm";
+import { getBoardCategories } from "@/src/api/boardApi";
 
 function getErrorStatus(err: unknown): number | null {
   if (typeof err !== "object" || err === null) return null;
@@ -17,14 +12,7 @@ function getErrorStatus(err: unknown): number | null {
   return typeof status === "number" ? status : null;
 }
 
-export default async function BoardDetailPage({ params }: Props) {
-  const { id } = await params;
-  const boardId = Number(id);
-
-  if (Number.isNaN(boardId)) {
-    redirect("/board");
-  }
-
+export default async function NewBoardPage() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
   const refreshToken = cookieStore.get("refreshToken")?.value;
@@ -35,14 +23,10 @@ export default async function BoardDetailPage({ params }: Props) {
 
   const tokens = { accessToken, refreshToken };
 
-  let board;
   let categories;
 
   try {
-    [board, categories] = await Promise.all([
-      getBoardById(boardId, tokens),
-      getBoardCategories(tokens),
-    ]);
+    categories = await getBoardCategories(tokens);
   } catch (err) {
     const status = getErrorStatus(err);
 
@@ -50,12 +34,8 @@ export default async function BoardDetailPage({ params }: Props) {
       redirect("/signin");
     }
 
-    if (status === 404) {
-      notFound();
-    }
-
     throw err;
   }
 
-  return <BoardDetail board={board} categories={categories} />;
+  return <BoardForm mode="create" categories={categories} />;
 }

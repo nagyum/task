@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 import { clearAuthTokens } from "@/src/api/client";
 import { isLoggedIn } from "@/src/utils/auth";
@@ -12,16 +12,26 @@ import style from "./Header.module.scss";
 
 const Header = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState<ReturnType<typeof getUser>>(null);
 
-  useEffect(() => {
-    setMounted(true);
+  const checkAuth = useCallback(() => {
     setLoggedIn(isLoggedIn());
     setUser(getUser());
   }, []);
+
+  useEffect(() => {
+    setMounted(true);
+    checkAuth();
+  }, [checkAuth]);
+
+  // 페이지 이동 시 로그인 상태 다시 체크
+  useEffect(() => {
+    checkAuth();
+  }, [pathname, checkAuth]);
 
   const handleLogout = () => {
     clearAuthTokens();
@@ -52,12 +62,12 @@ const Header = () => {
             </Link>
           ) : (
             <>
-              <span className={style.userInfo}>
-                {user?.name} ({user?.username})
-              </span>
               <Link className={style.navLink} href="/board">
                 커뮤니티
               </Link>
+              <span className={style.userInfo}>
+                {user?.name} ({user?.username})
+              </span>
               <button
                 type="button"
                 className={style.logoutButton}
@@ -118,6 +128,13 @@ const Header = () => {
             </div>
 
             <nav className={style.sidebarNav} aria-label="모바일 메뉴 항목">
+              <Link
+                className={style.sidebarLink}
+                href="/board"
+                onClick={() => setOpen(false)}
+              >
+                커뮤니티
+              </Link>
               {!showAuth ? (
                 <Link
                   className={style.sidebarLink}
@@ -131,13 +148,6 @@ const Header = () => {
                   <div className={style.sidebarUser}>
                     {user?.name} ({user?.username})
                   </div>
-                  <Link
-                    className={style.sidebarLink}
-                    href="/board"
-                    onClick={() => setOpen(false)}
-                  >
-                    커뮤니티
-                  </Link>
                   <button
                     type="button"
                     className={style.sidebarButton}

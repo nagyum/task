@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
 
-import BoardDetail from "@/src/components/page/board/BoardDetail";
+import BoardForm from "@/src/components/page/board/BoardForm";
 import { getBoardById, getBoardCategories } from "@/src/api/boardApi";
 
 type Props = {
@@ -17,7 +16,7 @@ function getErrorStatus(err: unknown): number | null {
   return typeof status === "number" ? status : null;
 }
 
-export default async function BoardDetailPage({ params }: Props) {
+export default async function EditBoardPage({ params }: Props) {
   const { id } = await params;
   const boardId = Number(id);
 
@@ -51,11 +50,11 @@ export default async function BoardDetailPage({ params }: Props) {
     }
 
     if (status === 404) {
-      notFound();
+      redirect("/board");
     }
 
     throw err;
   }
 
-  return <BoardDetail board={board} categories={categories} />;
+  return <BoardForm mode="edit" board={board} categories={categories} />;
 }

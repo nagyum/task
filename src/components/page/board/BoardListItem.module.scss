@@ -1,0 +1,60 @@
+@use "../../../styles/mixins.scss" as *;
+
+.item {
+  border-bottom: 1px solid #e5e7eb;
+
+  &:hover {
+    background: #f9fafb;
+  }
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 12px;
+  text-decoration: none;
+  color: inherit;
+
+  @include respond(md) {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 8px;
+  }
+}
+
+.category {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  background: #f3f4f6;
+  color: #4b5563;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+.title {
+  flex: 1;
+  font-size: 15px;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @include respond(md) {
+    flex-basis: 100%;
+    order: -1;
+    font-size: 14px;
+    white-space: normal;
+  }
+}
+
+.date {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: #9ca3af;
+
+  @include respond(md) {
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,88 @@
+@use "../../../styles/mixins.scss" as *;
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  gap: 16px;
+
+  @include respond(md) {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.link {
+  padding: 8px 16px;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #e5e7eb;
+  }
+}
+
+.disabled {
+  padding: 8px 16px;
+  background: #f3f4f6;
+  color: #9ca3af;
+  font-size: 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.pageInfo {
+  font-size: 14px;
+  color: #6b7280;
+  min-width: 60px;
+  text-align: center;
+}
+
+.sizeSelector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sizeLabel {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.sizeOption {
+  padding: 6px 12px;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 13px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #e5e7eb;
+  }
+}
+
+.sizeActive {
+  padding: 6px 12px;
+  background: #0963ec;
+  color: #fff;
+  font-size: 13px;
+  border-radius: 4px;
+  text-decoration: none;
+}

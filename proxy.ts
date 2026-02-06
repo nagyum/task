@@ -20,7 +20,9 @@ function decodeJwtPayload(token: string): JwtPayload | null {
     const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
     const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
     const json = JSON.parse(atob(padded));
-    return typeof json === "object" && json !== null ? (json as JwtPayload) : null;
+    return typeof json === "object" && json !== null
+      ? (json as JwtPayload)
+      : null;
   } catch {
     return null;
   }
@@ -119,6 +121,6 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)",
+    "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|header-logo\\.svg|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };
