@@ -5,8 +5,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 
-import { clearAuthTokens, getStoredAccessToken, refreshAuthTokens } from "@/src/api/client";
-import { isLoggedIn } from "@/src/utils/auth";
+import {
+  clearAuthTokens,
+  getStoredAccessToken,
+  refreshAuthTokens,
+} from "@/src/api/client";
+import { getAccessTokenExpSeconds, isLoggedIn } from "@/src/utils/auth";
 import { getUser } from "@/src/utils/users";
 import style from "./Header.module.scss";
 
@@ -17,11 +21,44 @@ const Header = () => {
   const [mounted, setMounted] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState<ReturnType<typeof getUser>>(null);
+  const refreshTimer = useRef<number | null>(null);
 
   const checkAuth = useCallback(() => {
     setLoggedIn(isLoggedIn());
     setUser(getUser());
   }, []);
+
+  const clearRefreshTimer = useCallback(() => {
+    if (refreshTimer.current !== null) {
+      window.clearTimeout(refreshTimer.current);
+      refreshTimer.current = null;
+    }
+  }, []);
+
+  const scheduleRefresh = useCallback(() => {
+    clearRefreshTimer();
+    const expSeconds = getAccessTokenExpSeconds();
+    if (!expSeconds) return;
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    const secondsUntilExp = expSeconds - nowSeconds;
+    const refreshInSeconds = Math.max(secondsUntilExp - 120, 5);
+    refreshTimer.current = window.setTimeout(() => {
+      refreshAuthTokens()
+        .then((refreshed) => {
+          if (refreshed) {
+            checkAuth();
+            scheduleRefresh();
+          } else {
+            setLoggedIn(false);
+            setUser(null);
+          }
+        })
+        .catch(() => {
+          setLoggedIn(false);
+          setUser(null);
+        });
+    }, refreshInSeconds * 1000);
+  }, [checkAuth, clearRefreshTimer]);
 
   const logTokenExp = useCallback(() => {
     const token = getStoredAccessToken();
@@ -38,22 +75,36 @@ const Header = () => {
   }, []);
 
   const refreshIfNeeded = useCallback(async () => {
+    const token = getStoredAccessToken();
+    if (token) {
+      // optimistic UI: show logged-in state immediately
+      setLoggedIn(true);
+      setUser(getUser());
+      logTokenExp();
+      scheduleRefresh();
+    }
+
     if (isLoggedIn()) {
       checkAuth();
-      logTokenExp();
       return;
     }
 
-    const refreshed = await refreshAuthTokens();
-    if (refreshed) {
-      checkAuth();
-      logTokenExp();
-      return;
-    }
-
-    setLoggedIn(false);
-    setUser(null);
-  }, [checkAuth]);
+    refreshAuthTokens()
+      .then((refreshed) => {
+        if (refreshed) {
+          checkAuth();
+          logTokenExp();
+          scheduleRefresh();
+          return;
+        }
+        setLoggedIn(false);
+        setUser(null);
+      })
+      .catch(() => {
+        setLoggedIn(false);
+        setUser(null);
+      });
+  }, [checkAuth, logTokenExp, scheduleRefresh]);
 
   useEffect(() => {
     setMounted(true); // eslint-disable-line
@@ -64,6 +115,12 @@ const Header = () => {
   useEffect(() => {
     refreshIfNeeded(); // eslint-disable-line
   }, [pathname, refreshIfNeeded]);
+
+  useEffect(() => {
+    return () => {
+      clearRefreshTimer();
+    };
+  }, [clearRefreshTimer]);
 
   const handleLogout = () => {
     clearAuthTokens();

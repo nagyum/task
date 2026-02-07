@@ -14,3 +14,15 @@ export function isLoggedIn(): boolean {
     return false;
   }
 }
+
+export function getAccessTokenExpSeconds(): number | null {
+  const token = getStoredAccessToken();
+  if (!token) return null;
+
+  try {
+    const payload = jwtDecode<{ exp?: number }>(token);
+    return typeof payload?.exp === "number" ? payload.exp : null;
+  } catch {
+    return null;
+  }
+}
