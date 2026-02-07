@@ -1,11 +1,11 @@
 import type { TokenResponse } from "../types/auth";
 
-const DEFAULT_BASE_URL = "/api/proxy";
-const PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? DEFAULT_BASE_URL;
+const SERVER_BASE_PATH = "/api/proxy";
+const CLIENT_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://front-mission.bigs.or.kr";
 
 export function getApiBaseUrl() {
-  if (PUBLIC_BASE_URL.startsWith("http")) return PUBLIC_BASE_URL;
-  if (typeof window !== "undefined") return PUBLIC_BASE_URL;
+  if (typeof window !== "undefined") return CLIENT_BASE_URL;
 
   const appUrl =
     process.env.NEXT_PUBLIC_APP_URL ??
@@ -16,10 +16,10 @@ export function getApiBaseUrl() {
     const normalized = appUrl.startsWith("http")
       ? appUrl
       : `https://${appUrl}`;
-    return `${normalized}${PUBLIC_BASE_URL}`;
+    return `${normalized}${SERVER_BASE_PATH}`;
   }
 
-  return `http://localhost:3000${PUBLIC_BASE_URL}`;
+  return `http://localhost:3000${SERVER_BASE_PATH}`;
 }
 
 export class ApiError extends Error {
