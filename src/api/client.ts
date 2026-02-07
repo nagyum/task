@@ -52,6 +52,35 @@ function isTokenResponse(data: unknown): data is TokenResponse {
 
 const ACCESS_TOKEN_COOKIE = "accessToken";
 const REFRESH_TOKEN_COOKIE = "refreshToken";
+const ACCESS_TOKEN_STORAGE = "accessToken";
+const REFRESH_TOKEN_STORAGE = "refreshToken";
+
+function setStorage(key: string, value: string) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // ignore
+  }
+}
+
+function getStorage(key: string): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function deleteStorage(key: string) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // ignore
+  }
+}
 
 function setCookie(
   name: string,
@@ -82,19 +111,23 @@ export function setAuthTokens(tokens: {
 }) {
   setCookie(ACCESS_TOKEN_COOKIE, tokens.accessToken);
   setCookie(REFRESH_TOKEN_COOKIE, tokens.refreshToken);
+  setStorage(ACCESS_TOKEN_STORAGE, tokens.accessToken);
+  setStorage(REFRESH_TOKEN_STORAGE, tokens.refreshToken);
 }
 
 export function clearAuthTokens() {
   deleteCookie(ACCESS_TOKEN_COOKIE);
   deleteCookie(REFRESH_TOKEN_COOKIE);
+  deleteStorage(ACCESS_TOKEN_STORAGE);
+  deleteStorage(REFRESH_TOKEN_STORAGE);
 }
 
 export function getStoredAccessToken(): string | null {
-  return getCookie(ACCESS_TOKEN_COOKIE);
+  return getStorage(ACCESS_TOKEN_STORAGE) ?? getCookie(ACCESS_TOKEN_COOKIE);
 }
 
 export function getStoredRefreshToken(): string | null {
-  return getCookie(REFRESH_TOKEN_COOKIE);
+  return getStorage(REFRESH_TOKEN_STORAGE) ?? getCookie(REFRESH_TOKEN_COOKIE);
 }
 
 export async function apiClient<T = unknown>(
