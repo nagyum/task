@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 
-import { clearAuthTokens, refreshAuthTokens } from "@/src/api/client";
+import { clearAuthTokens, getStoredAccessToken, refreshAuthTokens } from "@/src/api/client";
 import { isLoggedIn } from "@/src/utils/auth";
 import { getUser } from "@/src/utils/users";
 import style from "./Header.module.scss";
@@ -23,15 +23,31 @@ const Header = () => {
     setUser(getUser());
   }, []);
 
+  const logTokenExp = useCallback(() => {
+    const token = getStoredAccessToken();
+    if (!token) return;
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const exp = typeof payload?.exp === "number" ? payload.exp : null;
+      if (!exp) return;
+      const expDate = new Date(exp * 1000).toISOString();
+      console.info("[auth] accessToken exp:", expDate);
+    } catch {
+      // ignore
+    }
+  }, []);
+
   const refreshIfNeeded = useCallback(async () => {
     if (isLoggedIn()) {
       checkAuth();
+      logTokenExp();
       return;
     }
 
     const refreshed = await refreshAuthTokens();
     if (refreshed) {
       checkAuth();
+      logTokenExp();
       return;
     }
 
